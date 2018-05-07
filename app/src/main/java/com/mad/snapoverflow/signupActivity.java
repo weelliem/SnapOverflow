@@ -15,11 +15,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class signupActivity extends AppCompatActivity implements View.OnClickListener{
 
-    EditText editTextEmail;
-    EditText editTextPassword;
+    EditText editTextEmail, editTextPassword,editTextUni, editTextDate, editTextAoi, editTextUsername;
+
     ProgressBar progressSign;
     private FirebaseAuth mAuth;
 
@@ -32,6 +33,10 @@ public class signupActivity extends AppCompatActivity implements View.OnClickLis
         editTextEmail = findViewById(R.id.textEmailReg);
         editTextPassword = findViewById(R.id.textPasswordReg);
         progressSign = findViewById(R.id.progressSign);
+        editTextAoi = findViewById(R.id.textAoI);
+        editTextDate = findViewById(R.id.textDate);
+        editTextUsername = findViewById(R.id.textUsername);
+        editTextUni = findViewById(R.id.textUniversity);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -41,8 +46,12 @@ public class signupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void registerUser() {
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
+        final String email = editTextEmail.getText().toString().trim();
+        final String password = editTextPassword.getText().toString().trim();
+        final String university = editTextUni.getText().toString().trim();
+        final String aoi = editTextAoi.getText().toString().trim();
+        final String date = editTextDate.getText().toString().trim();
+        final String username = editTextUsername.getText().toString().trim();
 
         if(email.isEmpty()){
             editTextEmail.setError("Email is required");
@@ -75,11 +84,36 @@ public class signupActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressSign.setVisibility(View.GONE);
                 if(task.isSuccessful()){
-                    Intent intent = new Intent(signupActivity.this,loginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
 
-                    Toast.makeText(getApplicationContext(),"User Registered Successful",Toast.LENGTH_SHORT).show();
+                    Users users = new Users (
+                            username,
+                            email,
+                            password,
+                            university,
+                            aoi,
+                            date
+                    );
+
+
+                    FirebaseDatabase.getInstance().getReference("Users")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()) {
+                                Intent intent = new Intent(signupActivity.this, loginActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+
+                                Toast.makeText(getApplicationContext(), "User Registered Successful", Toast.LENGTH_SHORT).show();
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(),task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+
                 }
                 else {
 

@@ -37,6 +37,38 @@
             android:ems="10"
             android:inputType="textPassword" />
 
+        <EditText
+            android:id="@+id/textUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Username" />
+
+        <EditText
+            android:id="@+id/textDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date"
+            android:hint="Date of Birth"/>
+
+        <EditText
+            android:id="@+id/textUniversity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="University" />
+
+        <EditText
+            android:id="@+id/textAoI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Area of Interest" />
+
         <Button
             android:id="@+id/buttonRegister"
             android:layout_width="match_parent"
