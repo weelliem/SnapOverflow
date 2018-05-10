@@ -30,6 +30,7 @@ public class signupActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+
         editTextEmail = findViewById(R.id.textEmailReg);
         editTextPassword = findViewById(R.id.textPasswordReg);
         progressSign = findViewById(R.id.progressSign);
