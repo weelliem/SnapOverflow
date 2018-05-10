@@ -79,7 +79,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                         } else {
-                            Toast.makeText(MapsActivity.this, "Unable to Find Current Location", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapsActivity.this, "Unable to Find Current Location", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -123,12 +123,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     private void getLocationPermission(){
+        Log.d(TAG,"getLocationPermission Called ");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
         if(ContextCompat.checkSelfPermission(this.getApplicationContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(this.getApplicationContext(),COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionGranted = true;
+                initMap();
+                Log.d(TAG,"mLocationPermissionGranted True");
             }
             else {
                 ActivityCompat.requestPermissions(this,permissions,LOCATION_REQUEST_CODE);
@@ -141,6 +144,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d(TAG,"onRequestPermissionResult Called ");
         mLocationPermissionGranted = false;
 
         switch (requestCode){
@@ -149,10 +153,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     for(int i = 0; i < grantResults.length; i++) {
                         if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
                             mLocationPermissionGranted = false;
+                            Log.d(TAG,"PERMISSION FAILED Called ");
                             return;
                         }
                     }
                     mLocationPermissionGranted = true;
+                    Log.d(TAG,"PERMISSION GRANTED Called ");
                     initMap();
                 }
             }
