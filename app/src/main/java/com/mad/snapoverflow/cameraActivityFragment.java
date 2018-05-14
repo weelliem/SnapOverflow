@@ -1,10 +1,13 @@
 package com.mad.snapoverflow;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
 import android.Manifest;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -63,6 +66,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -87,8 +91,32 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         return fragment;
     }
 
+    private String saveToInternalStorage(Bitmap bitmapImage){
+        ContextWrapper cw = new ContextWrapper(Objects.requireNonNull(getContext()).getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath=new File(directory,"profile.jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return directory.getAbsolutePath();
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_camera_fragment , container, false);
 
         surfaceView = view.findViewById(R.id.surfaceView);
@@ -100,10 +128,19 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         jpegCallback = new android.hardware.Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, android.hardware.Camera camera) {
-             Intent intent = new Intent(getActivity(), uploadActivity.class);
+                Intent intent = new Intent(getActivity(), uploadActivity.class);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                if (bitmap != null){
+                    String s = saveToInternalStorage(bitmap);
+                    intent.putExtra("image",s);
+                }
 
 
-                final DatabaseReference image = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
+
+
+
+                /*final DatabaseReference image = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
                 final String key = image.push().getKey();
 
                 StorageReference filePath = FirebaseStorage.getInstance().getReference().child("camera_picture").child(key);
@@ -132,7 +169,7 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
                         Toast.makeText(getContext(),"error uploading",Toast.LENGTH_SHORT).show();
                         return;
                     }
-                });
+                });*/
 
                 startActivity(intent);
                 return;
