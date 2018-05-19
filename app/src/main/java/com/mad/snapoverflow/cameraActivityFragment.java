@@ -1,5 +1,6 @@
 package com.mad.snapoverflow;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -23,6 +25,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -54,12 +57,17 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,8 +85,9 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
     Button btnCapture;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
-    String Uid;
+
     Uri image;
+    ProgressDialog mProgress;
 
     android.hardware.Camera.PictureCallback jpegCallback;
 
@@ -91,7 +100,19 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         return fragment;
     }
 
+    private Bitmap rotate(Bitmap decodeBitmap) {
+        int width = decodeBitmap.getWidth();
+        int height = decodeBitmap.getHeight();
+
+        Matrix matrix = new Matrix();
+        matrix.setRotate(90);
+
+        return Bitmap.createBitmap(decodeBitmap,0,0,width,height,matrix,true);
+
+    }
+
     private String saveToInternalStorage(Bitmap bitmapImage){
+        Bitmap rotateBitmap = rotate(bitmapImage);
         ContextWrapper cw = new ContextWrapper(Objects.requireNonNull(getContext()).getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
         File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
@@ -102,11 +123,12 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         try {
             fos = new FileOutputStream(mypath);
             // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            rotateBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
+                assert fos != null;
                 fos.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,7 +145,7 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         surfaceHolder = surfaceView.getHolder();
 
         btnCapture = view.findViewById(R.id.btnCapture);
-        Uid = FirebaseAuth.getInstance().getUid();
+
 
         jpegCallback = new android.hardware.Camera.PictureCallback() {
             @Override
@@ -135,41 +157,6 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
                     String s = saveToInternalStorage(bitmap);
                     intent.putExtra("image",s);
                 }
-
-
-
-
-
-                /*final DatabaseReference image = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
-                final String key = image.push().getKey();
-
-                StorageReference filePath = FirebaseStorage.getInstance().getReference().child("camera_picture").child(key);
-                UploadTask upload = filePath.putBytes(bytes);
-
-                upload.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Uri imageUrl = taskSnapshot.getDownloadUrl();
-                        Long currentTimestamp = System.currentTimeMillis();
-                        Long endTimestamp = currentTimestamp + (24 * 60 * 60 * 1000);
-
-                        Map<String, Object> maptoUpload = new HashMap<>();
-                        maptoUpload.put("imageUrl", imageUrl.toString());
-                        maptoUpload.put("timestamp", currentTimestamp);
-                        maptoUpload.put("timestampEnd", endTimestamp);
-
-                        image.child(key).setValue(maptoUpload);
-
-                    }
-                });
-
-                upload.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(),"error uploading",Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                });*/
 
                 startActivity(intent);
                 return;
@@ -258,4 +245,6 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
             }
         }
     }
+
+
 }
