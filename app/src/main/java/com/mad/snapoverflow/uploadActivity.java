@@ -43,11 +43,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class uploadActivity extends AppCompatActivity implements LocationListener{
+public class uploadActivity extends AppCompatActivity{
 
     TextView gps;
-    Location current;
-    LocationManager mLocationManager;
+
     TextView timeAnddate;
     Button backBtn;
     String Uid;
@@ -55,6 +54,8 @@ public class uploadActivity extends AppCompatActivity implements LocationListene
     byte[] byteArray;
     EditText titles;
     EditText details;
+    double mLong;
+    double mLat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,20 +69,11 @@ public class uploadActivity extends AppCompatActivity implements LocationListene
         titles = findViewById(R.id.titleText);
         details = findViewById(R.id.contentText);
 
+        mapsActivity map = new mapsActivity();
+        mLat = map.getLat();
+        mLong = map.getLong();
 
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        current = mLocationManager.getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
-        onLocationChanged(current);
+        gps.setText("Long " + mLong + " Lat " + mLat);
 
 
         String image = getIntent().getStringExtra("image");
@@ -93,10 +85,12 @@ public class uploadActivity extends AppCompatActivity implements LocationListene
        uploadBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
+               //final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
+               final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Question");
                final String key = data.push().getKey();
-               final double longi = current.getLongitude();
-               final double lat = current.getLatitude();
+               mapsActivity map = new mapsActivity();
+               final double longi = map.getLong();
+               final double lat = map.getLong();
 
 
                StorageReference filePath = FirebaseStorage.getInstance().getReference().child("camera_picture").child(key);
@@ -114,7 +108,7 @@ public class uploadActivity extends AppCompatActivity implements LocationListene
                        maptoUpload.put("timestamp", currentTimestamp);
                        maptoUpload.put("timestampEnd", endTimestamp);
                        maptoUpload.put("systemtime",currentTime.toString());
-                       maptoUpload.put("Gps Long", longi);
+                       maptoUpload.put("Gps Long",longi);
                        maptoUpload.put("Gps Lat", lat);
                        maptoUpload.put("title" , titles.getText().toString());
                        maptoUpload.put("content",details.getText().toString());
@@ -169,10 +163,4 @@ public class uploadActivity extends AppCompatActivity implements LocationListene
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        double longi = location.getLongitude();
-        double lat = location.getLatitude();
-        gps.setText("Longitude " + longi + " Latitude " + lat);
-    }
 }

@@ -39,6 +39,8 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_REQUEST_CODE = 2991;
+    public double Long;
+    public double Lat;
 
 
     private boolean mLocationPermissionGranted = false;
@@ -82,6 +84,8 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                            Lat = currentLocation.getLatitude();
+                            Long = currentLocation.getLongitude();
                         } else {
                             Toast.makeText(getActivity(), "Unable to Find Current Location", Toast.LENGTH_LONG).show();
                         }
@@ -99,15 +103,6 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -167,6 +162,14 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    public double getLong(){
+        return Long;
+    }
+
+    public double getLat() {
+        return Lat;
     }
 
 
