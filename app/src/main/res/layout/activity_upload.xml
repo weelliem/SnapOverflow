@@ -6,6 +6,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress"
+        android:visibility="gone"/>
+
     <ImageView
         android:id="@+id/tempImage"
         android:layout_width="match_parent"

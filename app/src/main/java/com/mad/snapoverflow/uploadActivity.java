@@ -1,6 +1,7 @@
 package com.mad.snapoverflow;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -56,6 +59,7 @@ public class uploadActivity extends AppCompatActivity{
     EditText details;
     double mLong;
     double mLat;
+    ProgressBar mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class uploadActivity extends AppCompatActivity{
         Uid = FirebaseAuth.getInstance().getUid();
         titles = findViewById(R.id.titleText);
         details = findViewById(R.id.contentText);
+        mProgressDialog = findViewById(R.id.progress);
 
         mapsActivity map = new mapsActivity();
         mLat = map.getLat();
@@ -92,7 +97,7 @@ public class uploadActivity extends AppCompatActivity{
                final double longi = map.getLong();
                final double lat = map.getLong();
 
-
+               mProgressDialog.setVisibility(View.VISIBLE);
                StorageReference filePath = FirebaseStorage.getInstance().getReference().child("camera_picture").child(key);
                UploadTask upload = filePath.putBytes(byteArray);
 
@@ -114,6 +119,7 @@ public class uploadActivity extends AppCompatActivity{
                        maptoUpload.put("content",details.getText().toString());
 
                        data.child(key).setValue(maptoUpload);
+                       mProgressDialog.setVisibility(View.GONE);
 
                    }
                });
@@ -122,9 +128,22 @@ public class uploadActivity extends AppCompatActivity{
                    @Override
                    public void onFailure(@NonNull Exception e) {
                        Toast.makeText(getApplicationContext(),"error uploading",Toast.LENGTH_SHORT).show();
-                       return;
+                        mProgressDialog.setVisibility(View.GONE);
+
                    }
                });
+
+               /*upload.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                   @Override
+                   public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                           double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                           System.out.println("Upload is " + progress + "% done");
+                           int currentprogress = (int) progress;
+                           mProgressDialog.setProgress(currentprogress);
+                   }
+               });*/
+
+
            }
        });
 

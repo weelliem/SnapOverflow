@@ -75,6 +75,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -159,7 +160,7 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
                 }
 
                 startActivity(intent);
-                return;
+
             }
         };
 
@@ -175,7 +176,9 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto();
+                cameraLoading imagePhoto = new cameraLoading();
+                imagePhoto.execute();
+
             }
         });
 
@@ -243,6 +246,46 @@ public class cameraActivityFragment extends Fragment implements SurfaceHolder.Ca
                 }
                 break;
             }
+        }
+    }
+
+    private class cameraLoading extends AsyncTask<Void, Void, String> {
+
+
+
+        @Override
+        protected void  onPreExecute(){
+            mProgress = new ProgressDialog(getContext());
+            mProgress.setMessage("processing");
+            mProgress.setIndeterminate(false);
+            mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgress.setCancelable(false); //makes the progress not cancelable
+            mProgress.show();
+            btnCapture.setEnabled(false);
+        }
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            takePhoto();
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            mProgress.hide();
+            btnCapture.setEnabled(true);
+
+
         }
     }
 

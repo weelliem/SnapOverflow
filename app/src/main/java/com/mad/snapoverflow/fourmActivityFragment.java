@@ -64,7 +64,7 @@ public class fourmActivityFragment extends Fragment {
                 (fourmObject.class,R.layout.activity_fourm_item,fourmHolder.class,mDatabaseReference) {
             @Override
             protected void populateViewHolder(fourmHolder viewHolder, fourmObject model, int position) {
-//                viewHolder.setUser(model.getUsername());
+//              viewHolder.setUser(model.getUsername());
                 viewHolder.setTitles(model.gettitle());
                 viewHolder.setImage(getContext(),model.getimageUrl());
             }
