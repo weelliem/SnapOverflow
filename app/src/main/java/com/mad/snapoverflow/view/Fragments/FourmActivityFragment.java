@@ -1,7 +1,6 @@
-package com.mad.snapoverflow;
+package com.mad.snapoverflow.view.Fragments;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,25 +11,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mad.snapoverflow.R;
+import com.mad.snapoverflow.model.FourmModel;
+import com.mad.snapoverflow.view.Adapters.FourmHolder;
 
 import java.util.ArrayList;
 
-public class fourmActivityFragment extends Fragment {
+public class FourmActivityFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     DatabaseReference mQuestions;
     private RecyclerView.Adapter mAdapter;
-    public  ArrayList<fourmObject> sFourmObjects = new ArrayList<>();
+    public  ArrayList<FourmModel> sFourmObjects = new ArrayList<>();
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
 
-    public static fourmActivityFragment newInstance() {
+    public static FourmActivityFragment newInstance() {
 
-        fourmActivityFragment fragment = new fourmActivityFragment();
+        FourmActivityFragment fragment = new FourmActivityFragment();
 
         return fragment;
     }
@@ -60,10 +61,10 @@ public class fourmActivityFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerAdapter<fourmObject,fourmHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<fourmObject, fourmHolder>
-                (fourmObject.class,R.layout.activity_fourm_item,fourmHolder.class,mDatabaseReference) {
+        FirebaseRecyclerAdapter<FourmModel,FourmHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<FourmModel, FourmHolder>
+                (FourmModel.class,R.layout.activity_fourm_item,FourmHolder.class,mDatabaseReference) {
             @Override
-            protected void populateViewHolder(fourmHolder viewHolder, fourmObject model, int position) {
+            protected void populateViewHolder(FourmHolder viewHolder, FourmModel model, int position) {
 //              viewHolder.setUser(model.getUsername());
                 viewHolder.setTitles(model.gettitle());
                 viewHolder.setImage(getContext(),model.getimageUrl());

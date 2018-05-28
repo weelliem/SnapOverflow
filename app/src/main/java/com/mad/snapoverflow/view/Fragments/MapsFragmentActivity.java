@@ -1,14 +1,15 @@
-package com.mad.snapoverflow;
+package com.mad.snapoverflow.view.Fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,13 +26,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.mad.snapoverflow.R;
+import com.mad.snapoverflow.databinding.ActivityMainBinding;
+import com.mad.snapoverflow.databinding.ActivityMapsFragmentBinding;
+import com.mad.snapoverflow.viewmodel.MapFragmentViewModel;
 
 
+public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallback {
 
 
-
-public class mapsActivity extends Fragment implements OnMapReadyCallback {
-
+    private ActivityMapsFragmentBinding mBinding;
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final String TAG = "MapActivity";
@@ -41,12 +45,13 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
     private static final int LOCATION_REQUEST_CODE = 2991;
     public double Long;
     public double Lat;
-
-
     private boolean mLocationPermissionGranted = false;
-    public static mapsActivity newInstance(){
 
-        mapsActivity fragment = new mapsActivity();
+
+
+    public static MapsFragmentActivity newInstance(){
+
+        MapsFragmentActivity fragment = new MapsFragmentActivity();
 
         return fragment;
     }
@@ -55,16 +60,16 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_maps_fragment, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.activity_maps_fragment,null,false);
+        View view = mBinding.getRoot();
 
-       getLocationPermission();
+        getLocationPermission();
 
-
-        return rootView;
+        return view;
     }
 
-
-    private void initMap(){
+//@BindingAdapter("initMap")
+    private void StartMap(){
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
@@ -84,8 +89,7 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
-                            Lat = currentLocation.getLatitude();
-                            Long = currentLocation.getLongitude();
+                            mBinding.setMapFragmentViewModel(new MapFragmentViewModel(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
                         } else {
                             Toast.makeText(getActivity(), "Unable to Find Current Location", Toast.LENGTH_LONG).show();
                         }
@@ -103,6 +107,15 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -129,7 +142,7 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
         if(ContextCompat.checkSelfPermission(getContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(getContext(),COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 mLocationPermissionGranted = true;
-                initMap();
+                StartMap();
                 Log.d(TAG,"mLocationPermissionGranted True");
             }
             else {
@@ -158,19 +171,10 @@ public class mapsActivity extends Fragment implements OnMapReadyCallback {
                     }
                     mLocationPermissionGranted = true;
                     Log.d(TAG,"PERMISSION GRANTED Called ");
-                    initMap();
+                    StartMap();
                 }
             }
         }
     }
-
-    public double getLong(){
-        return Long;
-    }
-
-    public double getLat() {
-        return Lat;
-    }
-
 
 }

@@ -1,10 +1,8 @@
-package com.mad.snapoverflow;
+package com.mad.snapoverflow.view.Activities;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,50 +12,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.mad.snapoverflow.R;
+import com.mad.snapoverflow.databinding.ActivityMainBinding;
+import com.mad.snapoverflow.view.Adapters.FragmentAdapter;
+import com.mad.snapoverflow.viewmodel.MainFragmentViewModel;
 
 
-public class mainActivity extends AppCompatActivity {
+public class MainFragmentActivity extends AppCompatActivity {
 
-    FragmentPagerAdapter adapterViewPager;
+    private FragmentPagerAdapter mAdapterViewPager;
+    private ActivityMainBinding mBinding;
+    private MainFragmentViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        mViewModel = new MainFragmentViewModel();
+        mBinding.setMainFragmentViewModel(mViewModel);
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
         ViewPager viewPager = findViewById(R.id.viewpager);
 
-        adapterViewPager = new mainActivity.MyPageAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapterViewPager);
+        mAdapterViewPager = new FragmentAdapter.MyPageAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(mAdapterViewPager);
         viewPager.setCurrentItem(1);
-    }
-
-    public static class MyPageAdapter extends FragmentPagerAdapter {
-
-        public MyPageAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch(position){
-                case 0:
-                    return fourmActivityFragment.newInstance();
-                case 1:
-                    return mapsActivity.newInstance();
-                case 2:
-                    return cameraActivityFragment.newInstance();
-            }
-            return null;
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
     }
 
     @Override
@@ -75,7 +56,7 @@ public class mainActivity extends AppCompatActivity {
             case R.id.menuLogout:
                 FirebaseAuth.getInstance().signOut();
                 finish();
-                startActivity(new Intent(this,loginActivity.class));
+                startActivity(new Intent(this,LoginActivity.class));
                 break;
         }
 

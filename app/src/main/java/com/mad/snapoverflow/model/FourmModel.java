@@ -1,12 +1,12 @@
-package com.mad.snapoverflow;
+package com.mad.snapoverflow.model;
 
-public class fourmObject {
+public class FourmModel {
 
     /*private String username;*/
     private String title;
     private String imageUrl;
 
-    public fourmObject(String title, String imageUrl) {
+    public FourmModel(String title, String imageUrl) {
        // this.username = username;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -37,7 +37,7 @@ public class fourmObject {
     }
 
 
-    public fourmObject(){
+    public FourmModel(){
 
     }
 }

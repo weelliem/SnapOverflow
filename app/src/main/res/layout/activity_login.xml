@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="loginViewModel"
+            type="com.mad.snapoverflow.viewmodel.LoginViewModel"/>
+
+
+    </data>
+
+
+
+
+
+
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".loginActivity">
+    tools:context=".view.Activities.LoginActivity">
 
 
     <LinearLayout
@@ -17,12 +32,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your Email"
+            android:hint="@{loginViewModel.emailHint}"
+            android:text="@={loginViewModel.mEmailText}"
             android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/textPassword"
-            android:hint="Enter your Password"
+            android:hint="@{loginViewModel.passwordHint}"
+            android:text="@={loginViewModel.mPasswordText}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -32,14 +49,17 @@
             android:id="@+id/buttonSign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign In" />
+            android:text="Sign In"
+            android:onClick="@{loginViewModel.onClickLogin()}"/>
 
         <TextView
             android:id="@+id/textSignup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Don't have an account? Sign Up" />
+            android:text="Don't have an account? Sign Up"
+            android:onClick="@{loginViewModel.onClickSignUp()}"/>
 
 
     </LinearLayout>
 </RelativeLayout>
+</layout>

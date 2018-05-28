@@ -1,4 +1,4 @@
-package com.mad.snapoverflow;
+package com.mad.snapoverflow.view.Adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,16 +6,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mad.snapoverflow.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class fourmHolder extends RecyclerView.ViewHolder{
+public class FourmHolder extends RecyclerView.ViewHolder{
         TextView userText;
         TextView mTitleText;
         ImageView mImageView;
         View mView;
-        public fourmHolder(View view) {
+        public FourmHolder(View view) {
             super(view);
             mView = view;
 
