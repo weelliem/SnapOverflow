@@ -30,6 +30,7 @@ import com.mad.snapoverflow.databinding.ActivityUploadBinding;
 import com.mad.snapoverflow.view.Fragments.MapsFragmentActivity;
 import com.mad.snapoverflow.viewmodel.CameraFragmentViewModel;
 import com.mad.snapoverflow.viewmodel.UploadViewModel;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -164,9 +165,14 @@ public class UploadActivity extends AppCompatActivity{
 
         try {
             File f=new File(path, "profile.jpg");
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
             ImageView img = findViewById(R.id.tempImage);
-            img.setImageBitmap(b);
+            Picasso.with(this)
+                    .load(f)
+                    .placeholder(R.color.cardview_dark_background)
+                    .into(img);
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+
+           //img.setImageBitmap(b);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             b.compress(Bitmap.CompressFormat.PNG, 100, stream);

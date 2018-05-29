@@ -1,13 +1,11 @@
 package com.mad.snapoverflow.viewmodel;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +15,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Button;
@@ -45,6 +42,8 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
     private Activity mActivity;
     private ProgressDialog mProgress;
     private Button mButton;
+    private String mPath;
+    private Intent mIntent;
 
     public CameraFragmentViewModel(android.hardware.Camera.PictureCallback callback, Context context,
                                    SurfaceHolder SurfaceHolder, Activity activity, ProgressDialog progress, Button btnCapture){
@@ -59,15 +58,16 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         
         mPictureCallback = new android.hardware.Camera.PictureCallback() {
             @Override
-            public void onPictureTaken(byte[] bytes, android.hardware.Camera camera) {
+            public void onPictureTaken(byte[] bytes, Camera camera) {
                 Bitmap mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Intent intent = new Intent(mContext, UploadActivity.class);
+               // Intent intent = new Intent(mContext, UploadActivity.class);
                 if (mBitmap != null){
-                    String s = saveToInternalStorage(mBitmap);
-                    intent.putExtra("image",s);
+                    mPath = saveToInternalStorage(mBitmap);
+                    mIntent.putExtra("image",mPath);
+                    //intent.putExtra("image",s);
                 }
 
-                mContext.startActivity(intent);
+               // mContext.startActivity(intent);
 
             }
         };
@@ -92,8 +92,13 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mIntent = new Intent(mContext, UploadActivity.class);
                 cameraLoading imagePhoto = new cameraLoading();
                 imagePhoto.execute();
+
+
+
             }
         };
     }
@@ -172,13 +177,6 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
     }
 
-    @BindingAdapter("bind:imageBitmap")
-    public static void loadImage(ImageView iv, Bitmap bitmap) {
-
-            iv.setImageBitmap(bitmap);
-
-         }
-
          private String saveToInternalStorage(Bitmap bitmapImage){
         Bitmap rotateBitmap = rotate(bitmapImage);
         ContextWrapper cw = new ContextWrapper(Objects.requireNonNull(mContext).getApplicationContext());
@@ -226,13 +224,16 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         @Override
         protected String doInBackground(Void... voids) {
 
+
             takePhoto();
 
+
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
 
 
 
@@ -242,9 +243,13 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
         @Override
         protected void onPostExecute(String result) {
+
+
+
+
             mProgress.hide();
             mButton.setEnabled(true);
-
+            mContext.startActivity(mIntent);
 
         }
     }

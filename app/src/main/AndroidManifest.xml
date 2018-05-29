@@ -23,14 +23,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.Activities.LoginActivity">
+
+        <activity android:name=".view.Activities.LoginActivity"
+            android:label="Snap Overflow"
+            android:theme="@style/AppThemeNoAction">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.Activities.SignupActivity" />
+
+
+
+        <activity android:name=".view.Activities.SignupActivity"
+            android:label="Snap Overflow"
+            android:theme="@style/AppThemeNoAction"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -48,7 +55,7 @@
             android:label="Snap Overflow"
             android:theme="@style/AppThemeNoAction" />
         <activity android:name=".view.Activities.UploadActivity" />
-        <activity android:name=".view.Activities.FourmDiscussionActivity"></activity>
+        <activity android:name=".view.Activities.FourmDiscussionActivity"/>
     </application>
 
 </manifest>
