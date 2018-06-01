@@ -2,6 +2,7 @@ package com.mad.snapoverflow.view.Activities;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -33,7 +34,7 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
-
+        toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         ViewPager viewPager = findViewById(R.id.viewpager);
 
         mAdapterViewPager = new FragmentAdapter.MyPageAdapter(getSupportFragmentManager());

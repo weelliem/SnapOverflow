@@ -68,7 +68,10 @@ public class FourmActivityFragment extends Fragment {
 //              viewHolder.setUser(model.getUsername());
                 viewHolder.setTitles(model.gettitle());
                 viewHolder.setImage(getContext(),model.getimageUrl());
+                viewHolder.setOnclick(model.getContent(),model.getimageUrl(),getContext(),model.gettitle(),model.getSystemtime(),model.getKey());
+
             }
+
         };
         mRecyclerView.setAdapter(firebaseRecyclerAdapter);
     }

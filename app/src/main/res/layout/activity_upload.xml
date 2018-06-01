@@ -22,18 +22,81 @@
 
 
 
-<LinearLayout
+<android.support.constraint.ConstraintLayout
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorWhite">
+
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineUpload"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineUpload2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.38" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineUpload3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <ImageView
+        android:id="@+id/imageViewUpload"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/guidelineUpload"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/my_imageViewLogoUpload"
+        android:layout_width="155dp"
+        android:layout_height="120dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/logo_stack_white"
+        app:layout_constraintTop_toTopOf="@id/guidelineUpload"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineUpload"
+        />
+
+    <ImageView
+        android:id="@+id/my_imageViewUp"
+        android:layout_width="170dp"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/upload_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineUpload"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineUpload"
+        />
 
     <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:visibility="gone"
         android:id="@+id/progress"
-        android:visibility="gone"/>
+        style="?android:attr/progressBarStyle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineUpload3"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineUpload3"
+        android:elevation="2dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
 
     <ImageView
         android:id="@+id/tempImage"
@@ -41,16 +104,27 @@
         android:layout_height="300dp"
         android:layout_gravity="top"
         android:scaleType="fitXY"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineUpload2"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineUpload2"
        />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guidelineUpload3"
+        app:layout_constraintBottom_toBottomOf="@id/guidelineUpload3">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <EditText
                 android:id="@+id/titleText"
@@ -58,11 +132,13 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Title" />
+                android:layout_marginBottom="10dp"
+                android:hint="Title" />
 
             <TextView
                 android:id="@+id/GPS"
                 android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
                 android:text="GPS" />
 
@@ -70,6 +146,7 @@
                 android:id="@+id/timeDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Time/Date" />
 
             <EditText
@@ -78,28 +155,37 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Content" />
+                android:hint="Description" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_margin="15dp">
 
                 <Button
                     android:id="@+id/uploadBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="upload" />
+                    android:text="upload"
+                    style="@style/buttonStyle"
+                    android:background="@drawable/button_main"
+                    android:stateListAnimator="@null"
+                    android:layout_marginRight="15dp"/>
 
                 <Button
                     android:id="@+id/backBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="back" />
+                    android:text="back"
+                    style="@style/buttonStyle"
+                    android:background="@drawable/button_main"
+                    android:stateListAnimator="@null"/>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
 </layout>

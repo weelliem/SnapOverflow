@@ -76,7 +76,7 @@ public class UploadActivity extends AppCompatActivity{
         details = findViewById(R.id.contentText);
         mProgressDialog = findViewById(R.id.progress);
 
-        MapsFragmentActivity map = new MapsFragmentActivity();
+
       //  mLat = map.getLat();
       //  mLong = map.getLong();
 
@@ -95,8 +95,10 @@ public class UploadActivity extends AppCompatActivity{
                //final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("UsersSignupModel").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
                final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Question");
                final String key = data.push().getKey();
-               MapsFragmentActivity map = new MapsFragmentActivity();
-              // final double longi = map.getLong();
+
+
+
+               // final double longi = map.getLong();
               // final double lat = map.getLong();
 
                mProgressDialog.setVisibility(View.VISIBLE);
@@ -119,9 +121,11 @@ public class UploadActivity extends AppCompatActivity{
                       // maptoUpload.put("Gps Lat", lat);
                        maptoUpload.put("title" , titles.getText().toString());
                        maptoUpload.put("content",details.getText().toString());
+                       maptoUpload.put("key",key);
 
                        data.child(key).setValue(maptoUpload);
                        mProgressDialog.setVisibility(View.GONE);
+                       finish();
 
                    }
                });
@@ -139,7 +143,7 @@ public class UploadActivity extends AppCompatActivity{
                    @Override
                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                           System.out.println("Upload is " + progress + "% done");
+                           System.out.println("upload_title is " + progress + "% done");
                            int currentprogress = (int) progress;
                            mProgressDialog.setProgress(currentprogress);
                    }
@@ -168,7 +172,7 @@ public class UploadActivity extends AppCompatActivity{
             ImageView img = findViewById(R.id.tempImage);
             Picasso.with(this)
                     .load(f)
-                    .placeholder(R.color.cardview_dark_background)
+                    .placeholder(R.drawable.progress_animation)
                     .into(img);
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
 
