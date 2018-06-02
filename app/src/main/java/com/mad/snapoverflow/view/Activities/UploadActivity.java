@@ -1,13 +1,16 @@
 package com.mad.snapoverflow.view.Activities;
 
+import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,8 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,6 +39,7 @@ import com.mad.snapoverflow.R;
 import com.mad.snapoverflow.databinding.ActivityUploadBinding;
 import com.mad.snapoverflow.view.Fragments.MapsFragmentActivity;
 import com.mad.snapoverflow.viewmodel.CameraFragmentViewModel;
+import com.mad.snapoverflow.viewmodel.MapFragmentViewModel;
 import com.mad.snapoverflow.viewmodel.UploadViewModel;
 import com.squareup.picasso.Picasso;
 
@@ -41,11 +52,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UploadActivity extends AppCompatActivity{
+public class UploadActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 
     private ActivityUploadBinding mUpBinding;
     private UploadViewModel mUpViewModel;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private static final String TAG = "MapActivity";
 
     TextView gps;
 
@@ -77,10 +90,9 @@ public class UploadActivity extends AppCompatActivity{
         mProgressDialog = findViewById(R.id.progress);
 
 
-      //  mLat = map.getLat();
-      //  mLong = map.getLong();
 
-        gps.setText("Long " + mLong + " Lat " + mLat);
+
+
 
 
         String image = getIntent().getStringExtra("image");
@@ -117,8 +129,8 @@ public class UploadActivity extends AppCompatActivity{
                        maptoUpload.put("timestamp", currentTimestamp);
                        maptoUpload.put("timestampEnd", endTimestamp);
                        maptoUpload.put("systemtime",currentTime.toString());
-                      // maptoUpload.put("Gps Long",longi);
-                      // maptoUpload.put("Gps Lat", lat);
+                       maptoUpload.put("gpsLong",mLong);
+                       maptoUpload.put("gpsLat", mLat);
                        maptoUpload.put("title" , titles.getText().toString());
                        maptoUpload.put("content",details.getText().toString());
                        maptoUpload.put("key",key);
@@ -194,4 +206,42 @@ public class UploadActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
+
+    private void getDeviceLocation() {
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try {
+                Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            Location currentLocation = (Location) task.getResult();
+                            gps.setText("Long " + currentLocation.getLongitude() + " Lat " + currentLocation.getLatitude());
+                            mLong = currentLocation.getLongitude();
+                            mLat = currentLocation.getLatitude();
+                            Log.d(TAG,"Lat " + currentLocation.getLatitude()+ " Long " +currentLocation.getLongitude() );
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Unable to Find Current Location", Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+                });
+
+        } catch (SecurityException e) {
+            Log.e(TAG, "getDeviceLocation : SecurityException: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getDeviceLocation();
+    }
 }

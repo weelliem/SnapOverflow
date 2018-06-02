@@ -24,11 +24,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.clustering.ClusterManager;
 import com.mad.snapoverflow.R;
 import com.mad.snapoverflow.databinding.ActivityMainBinding;
 import com.mad.snapoverflow.databinding.ActivityMapsFragmentBinding;
+import com.mad.snapoverflow.model.MarkerModel;
 import com.mad.snapoverflow.viewmodel.MapFragmentViewModel;
 
 
@@ -46,6 +54,10 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     public double Long;
     public double Lat;
     private boolean mLocationPermissionGranted = false;
+    private DatabaseReference mDatabaseReference;
+    private DatabaseReference mReference;
+
+    private ClusterManager<MarkerModel> mClusterManager;
 
 
 
@@ -120,11 +132,23 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mClusterManager = new ClusterManager<>(getContext(), googleMap);
+        googleMap.setOnCameraIdleListener(mClusterManager);
+        googleMap.setOnMarkerClickListener(mClusterManager);
+        googleMap.setOnInfoWindowClickListener(mClusterManager);
+
+        //addPersonItems();
+
+        mClusterManager.cluster();
+
+
         getDeviceLocation();
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mMap.setMyLocationEnabled(true);
+
+
 
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
@@ -133,6 +157,52 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        addMarker();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMap.clear();
+        mClusterManager.clearItems();
+        Log.d(TAG, "onPause: ");
+    }
+
+    public void updateMakers(){
+
+    }
+
+    public void addMarker(){
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mReference = mDatabaseReference.child("Question");
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    double latTxt = ds.child("gpsLat").getValue(double.class);
+                    double longTxt = ds.child("gpsLong").getValue(double.class);
+                    String titleTxt = ds.child("title").getValue(String.class);
+
+                    Log.d(TAG, "onDataChange: Lat" + latTxt + " Long " + longTxt);
+                   /* double Lat = Double.parseDouble(latTxt);
+                    double Long = Double.parseDouble(longTxt);*/
+                    LatLng newGps = new LatLng(latTxt,longTxt);
+                    mClusterManager.addItem(new MarkerModel(latTxt,longTxt,titleTxt,""));
+                    mClusterManager.cluster();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mReference.addListenerForSingleValueEvent(eventListener);
+    }
 
     private void getLocationPermission(){
         Log.d(TAG,"getLocationPermission Called ");
@@ -176,5 +246,6 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
             }
         }
     }
+
 
 }
