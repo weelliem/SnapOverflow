@@ -35,13 +35,15 @@ import com.mad.snapoverflow.databinding.ActivityMainBinding;
 import com.mad.snapoverflow.view.Adapters.FragmentAdapter;
 import com.mad.snapoverflow.viewmodel.MainFragmentViewModel;
 
-
+/* this is the main activity for which contains all the fragments. it controls and maintains the camera,map and fourm fragments */
 public class MainFragmentActivity extends AppCompatActivity {
 
     private FragmentPagerAdapter mAdapterViewPager;
     private ActivityMainBinding mBinding;
     private MainFragmentViewModel mViewModel;
 
+
+    /* on create lifecycle to connect the class to the activity */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,16 +51,20 @@ public class MainFragmentActivity extends AppCompatActivity {
         mViewModel = new MainFragmentViewModel();
         mBinding.setMainFragmentViewModel(mViewModel);
 
+        //the toolbar or action bar bindings
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         ViewPager viewPager = findViewById(R.id.viewpager);
 
+        //this adaptor manages the fragments
         mAdapterViewPager = new FragmentAdapter.MyPageAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapterViewPager);
         viewPager.setCurrentItem(1);
     }
 
+
+    /* basically creates the layout of the actionbar */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -68,11 +74,12 @@ public class MainFragmentActivity extends AppCompatActivity {
         return true;
     }
 
+    /* the overflow options for the action bar  */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menuLogout:
-                FirebaseAuth.getInstance().signOut();
+                FirebaseAuth.getInstance().signOut(); //allows the user to logout though firebase
                 finish();
                 startActivity(new Intent(this,LoginActivity.class));
                 break;

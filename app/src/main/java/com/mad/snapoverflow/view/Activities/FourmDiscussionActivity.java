@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/* this activity is the page for the display of the questions set by the users*/
 public class FourmDiscussionActivity extends AppCompatActivity {
 
     private String mImageUrl;
@@ -80,6 +81,7 @@ public class FourmDiscussionActivity extends AppCompatActivity {
     private static final String NULL = "";
     private static final String TEXT = "text";
 
+    /* the oncreate lifecycle that does on the binding and other instances of the application such as activites */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,11 +105,14 @@ public class FourmDiscussionActivity extends AppCompatActivity {
         mDate.setText(mDatetxt);
         mTitle.setText(mTitleTxt);
 
+        //picasso api that deals with loading images from urls
         Picasso.with(this)
                 .load(mImageUrl)
                 .placeholder(R.drawable.progress_animation)
                 .into(mImageView);
 
+
+        //recycleview bindings and options
         mRecyclerViewComment = findViewById(R.id.recycler_view2);
         mRecyclerViewComment.setNestedScrollingEnabled(false);
         mRecyclerViewComment.setHasFixedSize(true);
@@ -117,13 +122,17 @@ public class FourmDiscussionActivity extends AppCompatActivity {
         mRecyclerViewComment.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
 
+
+        //firebase bindings
         mFirebaseDatabaseComment = FirebaseDatabase.getInstance();
-
         mDatabaseReferenceComment = FirebaseDatabase.getInstance().getReference(QUESTION).child(mkey).child(COMMENT);
+        mDatabaseReferenceComment.keepSynced(true); //keeps the recycle view sync allowing for live updates
 
-        mDatabaseReferenceComment.keepSynced(true);
+
 
         mButton.setOnClickListener(new View.OnClickListener() {
+
+            /* this uploads the comments to firebase and sets it onto the recycleview */
             @Override
             public void onClick(View v) {
                 final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child(QUESTION);
@@ -138,20 +147,22 @@ public class FourmDiscussionActivity extends AppCompatActivity {
             }
         });
     }
-
+    /* the on start lifecycle which is called on the start of the applications*/
     @Override
     public void onStart() {
         super.onStart();
+        // Uses the firebase Recycler adappter to create connect firebase to the recycler view.
         FirebaseRecyclerAdapter<CommentsModel,CommentsHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<CommentsModel, CommentsHolder>
-                (CommentsModel.class,R.layout.activity_comments_item,CommentsHolder.class,mDatabaseReferenceComment) {
+                (CommentsModel.class,R.layout.activity_comments_item,CommentsHolder.class,mDatabaseReferenceComment) { // links the item activity, firebase as well as the holders.
             @Override
+            /* this populates and sets what ever data is pulled from firebase  */
             protected void populateViewHolder(CommentsHolder viewHolder, CommentsModel model, int position) {
                 viewHolder.setTitles(model.getText());
 
             }
 
         };
-        mRecyclerViewComment.setAdapter(firebaseRecyclerAdapter);
+        mRecyclerViewComment.setAdapter(firebaseRecyclerAdapter); //sets the addapter as the firebase adapter.
     }
 }
 

@@ -25,6 +25,7 @@ import com.mad.snapoverflow.view.Fragments.CameraActivityFragment;
 import com.mad.snapoverflow.view.Fragments.FourmActivityFragment;
 import com.mad.snapoverflow.view.Fragments.MapsFragmentActivity;
 
+/* fragment adpator helps manages the fragments for the main activity */
 public class FragmentAdapter {
     public static class MyPageAdapter extends FragmentPagerAdapter {
 
@@ -32,6 +33,8 @@ public class FragmentAdapter {
             super(fm);
         }
 
+
+        /* tells the activity which fragment to place to display  */
         @Override
         public Fragment getItem(int position) {
             switch(position){

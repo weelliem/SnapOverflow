@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+/* creates a the camera, captures it and sends it to another activity */
 public class CameraActivityFragment extends Fragment {
 
     private Button mBtnCapture;
@@ -70,7 +71,7 @@ public class CameraActivityFragment extends Fragment {
         return fragment;
     }
 
-
+    /* the on create version for the fragment that binds the variables and activity */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
 
@@ -81,7 +82,7 @@ public class CameraActivityFragment extends Fragment {
         mSurfaceView = mBinding.surfaceView;
         mSurfaceHolder = mSurfaceView.getHolder();
 
-
+        //sends the data to the model view to handel
         mBinding.setCameraFragmentViewModel(new CameraFragmentViewModel(mJpegCallback, getContext(),mSurfaceHolder,getActivity(),mProgress,mBinding.btnCapture));
 
 

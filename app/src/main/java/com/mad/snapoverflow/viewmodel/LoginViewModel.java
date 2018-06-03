@@ -17,10 +17,15 @@
 
 package com.mad.snapoverflow.viewmodel;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.BaseObservable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -38,6 +43,7 @@ import com.mad.snapoverflow.view.Activities.MainFragmentActivity;
 
 import static android.support.constraint.Constraints.TAG;
 
+/* this view model handles the logic for the login activity */
 public class LoginViewModel extends BaseObservable {
 
     private FirebaseAuth mAuth;
@@ -48,11 +54,15 @@ public class LoginViewModel extends BaseObservable {
     private String mEmailHint;
     private EditText mEmailET;
     private EditText mPasswordET;
+    private Activity mActivity;
+
+
+
     //private ProgressBar mProgressBar;
 
 
-
-    public LoginViewModel(UsersLoginModel User, Context context, String password, String email, EditText emailET, EditText passwordET) {
+/* the constuctor for the login activity */
+    public LoginViewModel(UsersLoginModel User, Context context, String password, String email, EditText emailET, EditText passwordET, Activity activity) {
         mEmailHint = User.emailHint;
         mPasswordHint = User.passwordHint;
         mContext = context;
@@ -60,6 +70,7 @@ public class LoginViewModel extends BaseObservable {
         mPasswordText = password;
         mEmailET = emailET;
         mPasswordET = passwordET;
+        mActivity = activity;
     }
 
     public String getEmailText() {
@@ -96,6 +107,7 @@ public class LoginViewModel extends BaseObservable {
         mEmailHint = emailHint;
     }
 
+    /* launches a new activity to the sign up */
     public View.OnClickListener onClickSignUp() {
         return new View.OnClickListener() {
             @Override
@@ -106,6 +118,7 @@ public class LoginViewModel extends BaseObservable {
 
     }
 
+    /* checks firebase autentication and see if the credentials is autheroised to login */
     public View.OnClickListener onClickLogin(){
       return new View.OnClickListener() {
         @Override
@@ -115,6 +128,7 @@ public class LoginViewModel extends BaseObservable {
       };
     }
 
+    /* checks the email inputs are within acceptable rangers for the application */
     public String userLoginEmail() {
         String email = getEmailText();
 
@@ -134,6 +148,7 @@ public class LoginViewModel extends BaseObservable {
         return email;
     }
 
+    /* checks the password inputs of the user to see if they are within acceptable rangers */
     public String userLoginPassword(){
         String password = getPasswordText();
         if (password.isEmpty()) {
@@ -154,6 +169,8 @@ public class LoginViewModel extends BaseObservable {
 
 
 
+
+/* the firebse authentication grabs the user imputs and comapres it to the login information stored on firebase */
     public void firebaseLoginAuth(final String email, final String password) {
         mAuth = FirebaseAuth.getInstance();
         if (!email.isEmpty() && !password.isEmpty()) {
@@ -174,12 +191,14 @@ public class LoginViewModel extends BaseObservable {
         }
     }
 
+    /* launches a new activity */
     private void launchMainActivity(){
         Intent intent = new Intent(mContext, MainFragmentActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(intent);
     }
 
+    /* launches a new activity */
     private void launchSignUpActivity() {
         mContext.startActivity(new Intent(mContext, SignupActivity.class));
     }

@@ -37,6 +37,7 @@ import com.mad.snapoverflow.R;
 import com.mad.snapoverflow.model.UsersSignupModel;
 import com.mad.snapoverflow.view.Activities.LoginActivity;
 
+/* this view model handles all the logic for the registration view */
 public class SignUpViewModel extends BaseObservable {
 
     private Context mContext;
@@ -47,6 +48,7 @@ public class SignUpViewModel extends BaseObservable {
     private FirebaseAuth mAuth;
     private static final String USERS = "Users";
 
+    /* constructor for the view */
     public SignUpViewModel(Context context, String email, String password, String aoi, String date, String uni,
                            String username, ProgressBar progress, EditText emailET, EditText passET) {
         mContext = context;
@@ -117,7 +119,7 @@ public class SignUpViewModel extends BaseObservable {
     }
 
 
-
+    /* checks that all the inputs that the user inputs are acceptable */
     private void registerUser() {
         final String email = getEmail();
         final String password = getPassword();
@@ -155,11 +157,12 @@ public class SignUpViewModel extends BaseObservable {
         mAuth = FirebaseAuth.getInstance();
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
+            /* uploads the inputs to firebase  */
             public void onComplete(@NonNull Task<AuthResult> task) {
                 mProgressSign.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
 
-                    UsersSignupModel users = new UsersSignupModel (
+                    UsersSignupModel users = new UsersSignupModel(
                             username,
                             email,
                             password,
@@ -197,8 +200,8 @@ public class SignUpViewModel extends BaseObservable {
 
     }
 
-
-    public View.OnClickListener onClickRegister(){
+/* starts the process to register an activity */
+    public View.OnClickListener onClickRegister() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,7 +210,8 @@ public class SignUpViewModel extends BaseObservable {
         };
     }
 
-    public View.OnClickListener onClickLogin(){
+    /* goes back to the login activity */
+    public View.OnClickListener onClickLogin() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -216,13 +220,14 @@ public class SignUpViewModel extends BaseObservable {
         };
     }
 
-    public void launchRegisteredActivity(){
+    /*launches a new activity*/
+    public void launchRegisteredActivity() {
         Intent intent = new Intent(mContext, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(intent);
     }
 
-
+    /*launches a new activity*/
     public void launchLoginActivity() {
         mContext.startActivity(new Intent(mContext, LoginActivity.class));
     }

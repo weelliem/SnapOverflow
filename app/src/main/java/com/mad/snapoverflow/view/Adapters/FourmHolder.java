@@ -31,6 +31,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+/* fourm holder this creates the item for the recycling view */
 public class FourmHolder extends RecyclerView.ViewHolder{
 
         private TextView mTitleText;
@@ -61,6 +62,7 @@ public class FourmHolder extends RecyclerView.ViewHolder{
             Picasso.with(ctx).load(imageUrl).placeholder(R.drawable.progress_animation).into(mImageView);
         }
 
+        /* allows the individual click of each item on the recycling view  */
         public void setOnclick(final String ctx,final String imageUrl, final Context context,final String title, final String date, final String key){
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override

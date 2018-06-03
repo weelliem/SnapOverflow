@@ -40,6 +40,7 @@ import com.mad.snapoverflow.databinding.ActivitySignupBinding;
 import com.mad.snapoverflow.model.UsersSignupModel;
 import com.mad.snapoverflow.viewmodel.SignUpViewModel;
 
+/* this class handles the view the layout of the registration activity */
 public class SignupActivity extends AppCompatActivity {
 
     public String editTextEmail, editTextPassword,editTextUni, editTextDate, editTextAoi, editTextUsername;
@@ -48,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
     private SignUpViewModel mViewModel;
 
 
-
+    /* on create lifecycle which handls the binding  */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

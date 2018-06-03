@@ -42,6 +42,7 @@ import com.mad.snapoverflow.viewmodel.LoginViewModel;
 
 import static android.support.constraint.Constraints.TAG;
 
+/* this class is manages the authentication and log in with the application*/
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding mBinding;
@@ -50,20 +51,23 @@ public class LoginActivity extends AppCompatActivity {
     private String mEditTextPassword;
     private static final String EMAILHINT = "Email";
     private static final String PASSWORDHINT = "Password";
+
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_REQUEST_CODE = 2991;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = DataBindingUtil.setContentView(this,R.layout.activity_login);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_login); //bindings to the activity
         mEditTextEmail = mBinding.textEmail.getText().toString();
         mEditTextPassword = mBinding.textPassword.getText().toString();
-        mViewModel = new LoginViewModel(new UsersLoginModel(EMAILHINT,PASSWORDHINT), this, mEditTextPassword, mEditTextEmail,mBinding.textEmail, mBinding.textPassword);
+        mViewModel = new LoginViewModel(new UsersLoginModel(EMAILHINT, PASSWORDHINT), this, mEditTextPassword, mEditTextEmail, mBinding.textEmail, mBinding.textPassword, this );
         mBinding.setLoginViewModel(mViewModel);
 
+        //permissions for the application
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.CAMERA};
 
@@ -80,7 +84,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
-
 
 
 }

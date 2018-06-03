@@ -17,6 +17,7 @@
 
 package com.mad.snapoverflow.viewmodel;
 
+/* model view that is connected the main activity view */
 public class MainFragmentViewModel {
    public MainFragmentViewModel(){
 

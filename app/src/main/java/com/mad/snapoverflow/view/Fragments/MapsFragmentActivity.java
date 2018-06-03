@@ -58,8 +58,8 @@ import com.mad.snapoverflow.databinding.ActivityMapsFragmentBinding;
 import com.mad.snapoverflow.model.MarkerModel;
 import com.mad.snapoverflow.viewmodel.MapFragmentViewModel;
 
-
-public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallback {
+/* this fragment holds and handles the google map and gps of the application */
+public class MapsFragmentActivity extends Fragment implements OnMapReadyCallback {
 
 
     private ActivityMapsFragmentBinding mBinding;
@@ -79,22 +79,23 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mReference;
 
-    private ClusterManager<MarkerModel> mClusterManager;
+    private ClusterManager<MarkerModel> mClusterManager; //manager for the grouping of markers
 
-
-
-    public static MapsFragmentActivity newInstance(){
+    /* constructor for the fragment for the activity */
+    public static MapsFragmentActivity newInstance() {
 
         MapsFragmentActivity fragment = new MapsFragmentActivity();
 
         return fragment;
     }
 
+    /* on create for the fragment that binds the activity to the class */
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.activity_maps_fragment,null,false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.activity_maps_fragment, null, false);
         View view = mBinding.getRoot();
 
 
@@ -103,23 +104,25 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
         return view;
     }
 
-//@BindingAdapter("initMap")
-    private void StartMap(){
+   /* when the map is generated calls this method if permission is grantted */
+    private void StartMap() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this); //calls back the map to refresh it
     }
 
+    /* grabs the current GPS location of the user / devices in general */
     private void getDeviceLocation() {
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
         try {
-            if(mLocationPermissionGranted){
+            if (mLocationPermissionGranted) {
                 Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
+                    /* if able to grab the current location of the user move the camera and center it on the map */
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
@@ -137,7 +140,7 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
     }
 
-
+    /* moves and zoom the map to the location that the camera is given */
     private void moveCamera(LatLng latLng, float zoom) {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
@@ -146,7 +149,7 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker into a cluster to group them
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -173,43 +176,37 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
         }
         mMap.setMyLocationEnabled(true);
 
-
-
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-
+    /* readd the makers in the onResume lifecycle */
     @Override
     public void onResume() {
         super.onResume();
         addMarker();
     }
 
+    /* when the activity is paused clear all markers on the map */
     @Override
     public void onPause() {
         super.onPause();
-        if(mLocationPermissionGranted){
-        mMap.clear();
-        mClusterManager.clearItems();
+        if (mLocationPermissionGranted) {
+            mMap.clear();
+            mClusterManager.clearItems();
         }
         Log.d(TAG, "onPause: ");
     }
 
-    public void updateMakers(){
 
-    }
-
-    public void addMarker(){
+   /* adds makers to the map by accessing firebase and grabing gps locations */
+    public void addMarker() {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mReference = mDatabaseReference.child(QUESTION);
 
-        if(mLocationPermissionGranted) {
+        if (mLocationPermissionGranted) {
 
             ValueEventListener eventListener = new ValueEventListener() {
                 @Override
+                /* grabs the GPS data and title from firebase */
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         double latTxt = ds.child(GPSLAT).getValue(double.class);
@@ -217,9 +214,9 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
                         String titleTxt = ds.child(TITLE).getValue(String.class);
 
                         Log.d(TAG, "onDataChange: Lat" + latTxt + " Long " + longTxt);
-                   /* double Lat = Double.parseDouble(latTxt);
-                    double Long = Double.parseDouble(longTxt);*/
                         LatLng newGps = new LatLng(latTxt, longTxt);
+
+                        //adds the manager to the markers to the cluster manager which allows for the grouping of the markers
                         mClusterManager.addItem(new MarkerModel(latTxt, longTxt, titleTxt, ""));
                         mClusterManager.cluster();
                     }
@@ -234,25 +231,26 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
         }
     }
 
-    private void getLocationPermission(){
-        Log.d(TAG,"getLocationPermission Called ");
+    /* checks the permissions that are granted by the user and if any are not granted send a result code */
+    private void getLocationPermission() {
+        Log.d(TAG, "getLocationPermission Called ");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.CAMERA};
+                Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.CAMERA};
 
-        if(ContextCompat.checkSelfPermission(getContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(getContext(),COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(getContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(getContext(), COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
                 StartMap();
-                Log.d(TAG,"mLocationPermissionGranted True");
+                Log.d(TAG, "mLocationPermissionGranted True");
+            } else {
+                ActivityCompat.requestPermissions(getActivity(), permissions, LOCATION_REQUEST_CODE);
             }
-            else {
-                ActivityCompat.requestPermissions(getActivity(),permissions,LOCATION_REQUEST_CODE);
-            }
-        }
-        else {
-            ActivityCompat.requestPermissions(getActivity(),permissions,LOCATION_REQUEST_CODE);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), permissions, LOCATION_REQUEST_CODE);
         }
     }
+
+    /* checks results code sent and reacts based on the code that were given */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -279,8 +277,7 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
             case CAMERA_REQUEST_CODE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-               /* mSurfaceHolder.addCallback(this);
-                mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);*/
+
                 } else {
                     Toast.makeText(getContext(), getContext().getResources().getString(R.string.cam_toast_one), Toast.LENGTH_LONG).show();
                 }

@@ -36,12 +36,13 @@ import com.mad.snapoverflow.view.Adapters.FourmHolder;
 
 import java.util.ArrayList;
 
+/* FourmActivityFragment fragment contains all instances of the questions in the recycleview */
 public class FourmActivityFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private DatabaseReference mQuestions;
     private RecyclerView.Adapter mAdapter;
-    public  ArrayList<FourmModel> sFourmObjects = new ArrayList<>();
+    public ArrayList<FourmModel> sFourmObjects = new ArrayList<>();
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -55,10 +56,12 @@ public class FourmActivityFragment extends Fragment {
         return fragment;
     }
 
+    /* basically the bindings for the activity to the class  */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_fourm_fragment, container, false);
 
+        //recycler bindings
         mRecyclerView = view.findViewById(R.id.recycler_view);
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setHasFixedSize(true);
@@ -68,25 +71,26 @@ public class FourmActivityFragment extends Fragment {
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
 
 
+        //firebase bindings
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-
-       mDatabaseReference = FirebaseDatabase.getInstance().getReference(QUESTION);
-
-       mDatabaseReference.keepSynced(true);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(QUESTION);
+        mDatabaseReference.keepSynced(true);
 
         return view;
     }
 
+    /* onStart lifecycle that binds the firebase recycleview adpator to the activity*/
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerAdapter<FourmModel,FourmHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<FourmModel, FourmHolder>
-                (FourmModel.class,R.layout.activity_fourm_item,FourmHolder.class,mDatabaseReference) {
+        FirebaseRecyclerAdapter<FourmModel, FourmHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<FourmModel, FourmHolder>
+                (FourmModel.class, R.layout.activity_fourm_item, FourmHolder.class, mDatabaseReference) {
             @Override
+            /* populates the activity to the recycleview and individual items */
             protected void populateViewHolder(FourmHolder viewHolder, FourmModel model, int position) {
                 viewHolder.setTitles(model.gettitle());
-                viewHolder.setImage(getContext(),model.getimageUrl());
-                viewHolder.setOnclick(model.getContent(),model.getimageUrl(),getContext(),model.gettitle(),model.getSystemTime(),model.getKey());
+                viewHolder.setImage(getContext(), model.getimageUrl());
+                viewHolder.setOnclick(model.getContent(), model.getimageUrl(), getContext(), model.gettitle(), model.getSystemTime(), model.getKey());
 
             }
 

@@ -39,7 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mad.snapoverflow.R;
-
+/* view model that links to the map fragment  */
 public class MapFragmentViewModel {
     private double mLat;
     private double mLong;

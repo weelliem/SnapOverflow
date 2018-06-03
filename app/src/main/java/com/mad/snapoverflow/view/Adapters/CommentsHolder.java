@@ -23,11 +23,13 @@ import android.widget.TextView;
 
 import com.mad.snapoverflow.R;
 
+/* the holder for the recycle view basically creates the individual items of the recycle view */
 public class CommentsHolder extends RecyclerView.ViewHolder {
 
     private View mView;
     private TextView mTitleText;
 
+    /* the constructor  */
     public CommentsHolder(View view) {
         super(view);
         mView = view;

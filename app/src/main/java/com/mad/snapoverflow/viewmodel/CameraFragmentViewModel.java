@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-
+/* handels all the logic for the camera fragments it creates and sets the functions of the camrea */
 public class CameraFragmentViewModel extends AppCompatActivity implements SurfaceHolder.Callback {
 
 
@@ -67,6 +67,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
     private String mPath;
     private Intent mIntent;
 
+    /* the constructor for the view model*/
     public CameraFragmentViewModel(android.hardware.Camera.PictureCallback callback, Context context,
                                    SurfaceHolder SurfaceHolder, Activity activity, ProgressDialog progress, Button btnCapture){
 
@@ -77,6 +78,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         mSurfaceHolder = SurfaceHolder;
         mActivity = activity;
 
+        //checks the permission of the device to allow for access to the camera and external storage
         if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA},CAMERA_REQUEST_CODE);
         }
@@ -86,8 +88,10 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
             mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         }
         
-        
+        //call back to the camera and perform an action
         mPictureCallback = new android.hardware.Camera.PictureCallback() {
+
+            /* takes a picture then decodes the image into a bitmap image and sends it to be encoded even more */
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
                 Bitmap mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -107,11 +111,12 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
     }
 
+    /* calls back the camera then takes a photo */
     private void takePhoto() {
         mCamera.takePicture(null,null, mPictureCallback);
     }
 
-
+    /* on click sends the intent of the image and runes the asyctask */
     public View.OnClickListener onClickCapture(){
         return new View.OnClickListener() {
             @Override
@@ -127,10 +132,12 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         };
     }
 
+    /* this creates the surface which where the camera resides */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mCamera = android.hardware.Camera.open();
 
+        //stores the parameter for the camera
         android.hardware.Camera.Parameters parameters;
         parameters = mCamera.getParameters();
 
@@ -170,6 +177,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
     }
 
+    /* result codes that are sent are handled acordingly within this function  */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -189,7 +197,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
 
 
-
+/* when the image captured by the  camera it is roated to make sure it is the right position it is rotated to the right position*/
     private Bitmap rotate(Bitmap decodeBitmap) {
         int width = decodeBitmap.getWidth();
         int height = decodeBitmap.getHeight();
@@ -200,8 +208,8 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         return Bitmap.createBitmap(decodeBitmap,0,0,width,height,matrix,true);
 
     }
-
-         private String saveToInternalStorage(Bitmap bitmapImage){
+        /* saves the image to temp memory and then sends the file path back  */
+        private String saveToInternalStorage(Bitmap bitmapImage){
         Bitmap rotateBitmap = rotate(bitmapImage);
         ContextWrapper cw = new ContextWrapper(Objects.requireNonNull(mContext).getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
@@ -230,7 +238,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
 
 
-
+/* this asyctask it creates a progress dialog and processes the image in the background as well as starts an new activity */
     public class cameraLoading extends AsyncTask<Void, Void, String> {
 
 

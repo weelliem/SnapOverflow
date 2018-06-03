@@ -64,13 +64,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/* this class handles the grabing and uploading of the image to the firebase as well as any other information that needs to be uploaded to firebase */
 public class UploadActivity extends AppCompatActivity implements OnMapReadyCallback {
 
 
     private ActivityUploadBinding mUpBinding;
     private UploadViewModel mUpViewModel;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private static final String TAG = "MapActivity";
+    private static final String TAG = "Upload Activity";
 
     private TextView mGps;
 
@@ -100,7 +101,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
     private static final String TIMESTAMPSTART = "timestamp";
     private static final String PROFILE = "profile.jpg";
 
-
+    /* simple onCreate lifecycle binding the activity to the layout and any other objects */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,31 +127,31 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
         final Date currentTime = Calendar.getInstance().getTime();
         mTimeAndDate.setText(currentTime.toString());
 
-       loadImageFromStorage(image);
+       loadImageFromStorage(image); //sends the image to get decoded and encoded
 
-       mUploadBtn.setOnClickListener(new View.OnClickListener() {
+       //uploads the data to firebase and saves it as a unique key.
+        mUploadBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
                final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child(QUESTIONS);
                final String key = data.push().getKey();
 
-
-
-               // final double longi = map.getLong();
-              // final double lat = map.getLong();
+               Log.d(TAG, "onClick: it works");
 
                mProgressDialog.setVisibility(View.VISIBLE);
                StorageReference filePath = FirebaseStorage.getInstance().getReference().child(CAMERA).child(key);
                UploadTask upload = filePath.putBytes(mByteArray);
 
                upload.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                   /* grabs all the data and places into a Map which then is passes it to firebase to be stored */
                    @Override
                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                        Uri imageUrl = taskSnapshot.getDownloadUrl();
                        Long currentTimestamp = System.currentTimeMillis();
                        Long endTimestamp = currentTimestamp + (24 * 60 * 60 * 1000);
 
-                       Map<String, Object> maptoUpload = new HashMap<>();
+                       Map<String, Object> maptoUpload = new HashMap<>(); //adds all the data to the firebase
                        maptoUpload.put(IMAGEURL, imageUrl.toString());
                        maptoUpload.put(TIMESTAMPSTART, currentTimestamp);
                        maptoUpload.put(TIMESTAMPEND, endTimestamp);
@@ -163,12 +164,15 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
                        data.child(key).setValue(maptoUpload);
                        mProgressDialog.setVisibility(View.GONE);
-                       finish();
+                       finish(); //closes the activity
+
+                       Log.d(TAG, "onSuccess: the files are uploaded ");
 
                    }
                });
 
                upload.addOnFailureListener(new OnFailureListener() {
+                   /* on failure of the upload notifies users */
                    @Override
                    public void onFailure(@NonNull Exception e) {
                        Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_upload_one),Toast.LENGTH_SHORT).show();
@@ -177,11 +181,12 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
                    }
                });
 
+               /* tracks the progress of the upload to firebase */
                upload.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                    @Override
                    public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                           System.out.println("upload_title is " + progress + "% done");
+                           Log.d(TAG, "onProgress: \"upload_title is \" + progress + \"% done\"");
                            int currentprogress = (int) progress;
                            mProgressDialog.setProgress(currentprogress);
                    }
@@ -192,7 +197,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
        });
 
 
-
+        /* basically finnishs the activity and goes back the previous activity */
        mBackBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
@@ -201,22 +206,22 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
        });
     }
 
-
+   /* loads image to the activity as well as encryps and decrypts the image file */
     private void loadImageFromStorage(String path)
     {
 
         try {
             File f=new File(path, PROFILE);
             ImageView img = findViewById(R.id.tempImage);
-            Picasso.with(this)
+            Picasso.with(this) //uses picasso to load the image onto the placeholder
                     .load(f)
                     .placeholder(R.drawable.progress_animation)
                     .into(img);
-            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+            Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f)); //decodes the image
 
            //img.setImageBitmap(b);
 
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream(); //converts the image to a bit array
             b.compress(Bitmap.CompressFormat.PNG, 100, stream);
             mByteArray = stream.toByteArray();
 
@@ -231,12 +236,13 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-
+    /* needed method for the fused google map api  */
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
     }
 
+    /* grabs the current gps location of the user */
     private void getDeviceLocation() {
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -265,6 +271,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+    /*on start lifecycle on start grab the location of the user*/
     @Override
     protected void onStart() {
         super.onStart();
