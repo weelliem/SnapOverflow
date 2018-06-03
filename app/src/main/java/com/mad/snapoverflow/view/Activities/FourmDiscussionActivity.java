@@ -53,16 +53,26 @@ public class FourmDiscussionActivity extends AppCompatActivity {
     private DatabaseReference mDatabaseReferenceComment;
     private String mkey;
 
+    private static final String IMAGEURL = "url";
+    private static final String CONTENT = "content";
+    private static final String TITLE = "title";
+    private static final String DATE = "date";
+    private static final String KEY = "key";
+    private static final String QUESTION = "Question";
+    private static final String COMMENT = "comments";
+    private static final String NULL = "";
+    private static final String TEXT = "text";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourm_discussion);
 
-        mImageUrl = getIntent().getStringExtra("url");
-        mContent = getIntent().getStringExtra("content");
-        mTitleTxt = getIntent().getStringExtra("title");
-        mDatetxt = getIntent().getStringExtra("date");
-        mkey = getIntent().getStringExtra("key");
+        mImageUrl = getIntent().getStringExtra(IMAGEURL);
+        mContent = getIntent().getStringExtra(CONTENT);
+        mTitleTxt = getIntent().getStringExtra(TITLE);
+        mDatetxt = getIntent().getStringExtra(DATE);
+        mkey = getIntent().getStringExtra(KEY);
 
         mImageView = findViewById(R.id.imageFourm);
         mCtxt = findViewById(R.id.ctxt);
@@ -92,21 +102,21 @@ public class FourmDiscussionActivity extends AppCompatActivity {
 
         mFirebaseDatabaseComment = FirebaseDatabase.getInstance();
 
-        mDatabaseReferenceComment = FirebaseDatabase.getInstance().getReference("Question").child(mkey).child("comments");
+        mDatabaseReferenceComment = FirebaseDatabase.getInstance().getReference(QUESTION).child(mkey).child(COMMENT);
 
         mDatabaseReferenceComment.keepSynced(true);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Question");
-                final String uid = data.child(mkey).child("comments").push().getKey();
+                final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child(QUESTION);
+                final String uid = data.child(mkey).child(COMMENT).push().getKey();
 
                 Map<String, Object> maptoUpload = new HashMap<>();
-                maptoUpload.put("text",mCommentEditTxt.getText().toString());
-                data.child(mkey).child("comments").child(uid).setValue(maptoUpload);
+                maptoUpload.put(TEXT,mCommentEditTxt.getText().toString());
+                data.child(mkey).child(COMMENT).child(uid).setValue(maptoUpload);
 
-                mCommentEditTxt.setText("");
+                mCommentEditTxt.setText(NULL);
 
             }
         });
@@ -119,7 +129,6 @@ public class FourmDiscussionActivity extends AppCompatActivity {
                 (CommentsModel.class,R.layout.activity_comments_item,CommentsHolder.class,mDatabaseReferenceComment) {
             @Override
             protected void populateViewHolder(CommentsHolder viewHolder, CommentsModel model, int position) {
-//              viewHolder.setUser(model.getUsername());
                 viewHolder.setTitles(model.getText());
 
             }

@@ -99,14 +99,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your Email"
+            android:hint="@string/enter_email_hint"
             android:inputType="textEmailAddress"
             android:text="@={SignupVM.mEmail}"/>
 
         <EditText
             android:layout_marginTop="10dp"
             android:id="@+id/textPasswordReg"
-            android:hint="Enter your Password"
+            android:hint="@string/enter_password_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -120,7 +120,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:hint="Username"
+            android:hint="@string/username_hint"
             android:text="@={SignupVM.mUsername}"/>
 
         <EditText
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="date"
-            android:hint="Date of Birth"
+            android:hint="@string/date_of_birth"
             android:text="@={SignupVM.mDate}"/>
 
         <EditText
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:hint="University"
+            android:hint="@string/University"
             android:text="@={SignupVM.mUniversity}"/>
 
         <EditText
@@ -150,7 +150,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:hint="Area of Interest"
+            android:hint="@string/Area_of_Intrest"
             android:text="@={SignupVM.mAoi}"/>
 
         <LinearLayout
@@ -168,7 +168,7 @@
                 android:background="@drawable/button_main"
                 android:onClick="@{SignupVM.onClickLogin()}"
                 android:stateListAnimator="@null"
-                android:text="Cancel"
+                android:text="@string/button_cancel"
                 android:layout_margin="10dp"/>
 
             <Button
@@ -181,7 +181,7 @@
                 android:background="@drawable/button_main"
                 android:onClick="@{SignupVM.onClickRegister()}"
                 android:stateListAnimator="@null"
-                android:text="Register" />
+                android:text="@string/button_register" />
         </LinearLayout>
 
 

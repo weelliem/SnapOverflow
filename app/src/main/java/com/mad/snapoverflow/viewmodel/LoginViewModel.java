@@ -36,8 +36,8 @@ public class LoginViewModel extends BaseObservable {
 
 
     public LoginViewModel(UsersLoginModel User, Context context, String password, String email, EditText emailET, EditText passwordET) {
-        mEmailHint = User.mEmailhint;
-        mPasswordHint = User.mPasswordhint;
+        mEmailHint = User.emailHint;
+        mPasswordHint = User.passwordHint;
         mContext = context;
         mEmailText = email;
         mPasswordText = password;
@@ -102,13 +102,13 @@ public class LoginViewModel extends BaseObservable {
         String email = getEmailText();
 
         if(email.isEmpty()){
-            mEmailET.setError("Email is required");
+            mEmailET.setError(mContext.getResources().getString(R.string.email_error));
             mEmailET.requestFocus();
 
         }
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() && email != null){
-            mEmailET.setError("Please enter a valid email");
+            mEmailET.setError(mContext.getResources().getString(R.string.email_valid));
             mEmailET.requestFocus();
 
 
@@ -120,13 +120,13 @@ public class LoginViewModel extends BaseObservable {
     public String userLoginPassword(){
         String password = getPasswordText();
         if (password.isEmpty()) {
-            mPasswordET.setError("Password is required");
+            mPasswordET.setError(mContext.getResources().getString(R.string.password_error));
             mPasswordET.requestFocus();
 
         }
 
         if (password.length() < 6) {
-            mPasswordET.setError("Minimum length of password should be 6 characters");
+            mPasswordET.setError(mContext.getResources().getString(R.string.min_string));
             mPasswordET.requestFocus();
 
 

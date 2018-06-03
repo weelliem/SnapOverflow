@@ -2,4 +2,34 @@
     <string name="app_name">com.mad.snapoverflow</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_api_key">AIzaSyBEgis9lRJMnsyT4KXq9xZCenkd2qYLhvA</string>
+    <string name="user_fill">Anonymous</string>
+    <string name="button_ctp">CAPTURE</string>
+    <string name="fill">random fill text</string>
+    <string name="enter_email_hint">Enter your Email</string>
+    <string name="enter_password_hint">Enter your Password</string>
+    <string name="username_hint">Username</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="University">University</string>
+    <string name="Area_of_Intrest">Area of Interest</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_register">Register</string>
+    <string name="title_hint">Title</string>
+    <string name="gps_fill">GPS</string>
+    <string name="time_date">Time/Date</string>
+    <string name="description_hint">Description</string>
+    <string name="button_upload">Upload</string>
+    <string name="button_back">Back</string>
+    <string name="button_logout">Logout</string>
+    <string name="upload_long_one">Long </string>
+    <string name="upload_lat_one"> Lat </string>
+    <string name="email_error">Email is required</string>
+    <string name="email_valid">Please enter a valid email</string>
+    <string name="password_error">Password is required</string>
+    <string name="min_string">Minimum length of password should be 6 characters</string>
+    <string name="reg_toast_one">User Registered Successful</string>
+    <string name="reg_toast_two">Email already Exists</string>
+    <string name="cam_toast_one">Please provide the permission</string>
+    <string name="map_toast_one">Unable to Find Current Location</string>
+    <string name="error_upload_one">error uploading</string>
+
 </resources>

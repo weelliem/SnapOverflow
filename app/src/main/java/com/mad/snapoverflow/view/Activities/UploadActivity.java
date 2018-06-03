@@ -1,7 +1,6 @@
 package com.mad.snapoverflow.view.Activities;
 
 import android.content.Context;
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +22,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,9 +35,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.mad.snapoverflow.R;
 import com.mad.snapoverflow.databinding.ActivityUploadBinding;
-import com.mad.snapoverflow.view.Fragments.MapsFragmentActivity;
-import com.mad.snapoverflow.viewmodel.CameraFragmentViewModel;
-import com.mad.snapoverflow.viewmodel.MapFragmentViewModel;
 import com.mad.snapoverflow.viewmodel.UploadViewModel;
 import com.squareup.picasso.Picasso;
 
@@ -60,18 +55,33 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final String TAG = "MapActivity";
 
-    TextView gps;
+    private TextView mGps;
 
-    TextView timeAnddate;
-    Button backBtn;
-    String Uid;
-    Button uploadBtn;
-    byte[] byteArray;
-    EditText titles;
-    EditText details;
-    double mLong;
-    double mLat;
-    ProgressBar mProgressDialog;
+    private TextView mTimeAndDate;
+    private Button mBackBtn;
+    private String mUid;
+    private Button mUploadBtn;
+    private byte[] mByteArray;
+    private EditText mTitles;
+    private EditText mDetails;
+    private double mLong;
+    private double mLat;
+    private ProgressBar mProgressDialog;
+
+    private static final String IMAGE = "image";
+    private static final String QUESTIONS = "Question";
+    private static final String CAMERA = "camera_picture";
+    private static final String IMAGEURL = "url";
+    private static final String CONTENT = "content";
+    private static final String KEY = "key";
+    private static final String COMMENT = "comments";
+    private static final String GPSLONG = "gpsLong";
+    private static final String GPSLat = "gpsLat";
+    private static final String TITLE = "title";
+    private static final String SYSTEMTIME = "systemtime";
+    private static final String TIMESTAMPEND = "timestampEnd";
+    private static final String TIMESTAMPSTART = "timestamp";
+    private static final String PROFILE = "profile.jpg";
 
 
     @Override
@@ -80,13 +90,13 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
         mUpBinding = DataBindingUtil.setContentView(this,R.layout.activity_upload);
 
 
-        gps = findViewById(R.id.GPS);
-        timeAnddate = findViewById(R.id.timeDate);
-        backBtn = findViewById(R.id.backBtn);
-        uploadBtn = findViewById(R.id.uploadBtn);
-        Uid = FirebaseAuth.getInstance().getUid();
-        titles = findViewById(R.id.titleText);
-        details = findViewById(R.id.contentText);
+        mGps = findViewById(R.id.GPS);
+        mTimeAndDate = findViewById(R.id.timeDate);
+        mBackBtn = findViewById(R.id.backBtn);
+        mUploadBtn = findViewById(R.id.uploadBtn);
+        mUid = FirebaseAuth.getInstance().getUid();
+        mTitles = findViewById(R.id.titleText);
+        mDetails = findViewById(R.id.contentText);
         mProgressDialog = findViewById(R.id.progress);
 
 
@@ -95,17 +105,16 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
 
-        String image = getIntent().getStringExtra("image");
+        String image = getIntent().getStringExtra(IMAGE);
         final Date currentTime = Calendar.getInstance().getTime();
-        timeAnddate.setText(currentTime.toString());
+        mTimeAndDate.setText(currentTime.toString());
 
        loadImageFromStorage(image);
 
-       uploadBtn.setOnClickListener(new View.OnClickListener() {
+       mUploadBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               //final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("UsersSignupModel").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Uid").child("Question");
-               final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child("Question");
+               final DatabaseReference data = FirebaseDatabase.getInstance().getReference().child(QUESTIONS);
                final String key = data.push().getKey();
 
 
@@ -114,8 +123,8 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
               // final double lat = map.getLong();
 
                mProgressDialog.setVisibility(View.VISIBLE);
-               StorageReference filePath = FirebaseStorage.getInstance().getReference().child("camera_picture").child(key);
-               UploadTask upload = filePath.putBytes(byteArray);
+               StorageReference filePath = FirebaseStorage.getInstance().getReference().child(CAMERA).child(key);
+               UploadTask upload = filePath.putBytes(mByteArray);
 
                upload.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                    @Override
@@ -125,15 +134,15 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
                        Long endTimestamp = currentTimestamp + (24 * 60 * 60 * 1000);
 
                        Map<String, Object> maptoUpload = new HashMap<>();
-                       maptoUpload.put("imageUrl", imageUrl.toString());
-                       maptoUpload.put("timestamp", currentTimestamp);
-                       maptoUpload.put("timestampEnd", endTimestamp);
-                       maptoUpload.put("systemtime",currentTime.toString());
-                       maptoUpload.put("gpsLong",mLong);
-                       maptoUpload.put("gpsLat", mLat);
-                       maptoUpload.put("title" , titles.getText().toString());
-                       maptoUpload.put("content",details.getText().toString());
-                       maptoUpload.put("key",key);
+                       maptoUpload.put(IMAGEURL, imageUrl.toString());
+                       maptoUpload.put(TIMESTAMPSTART, currentTimestamp);
+                       maptoUpload.put(TIMESTAMPEND, endTimestamp);
+                       maptoUpload.put(SYSTEMTIME,currentTime.toString());
+                       maptoUpload.put(GPSLONG,mLong);
+                       maptoUpload.put(GPSLat, mLat);
+                       maptoUpload.put(TITLE , mTitles.getText().toString());
+                       maptoUpload.put(CONTENT, mDetails.getText().toString());
+                       maptoUpload.put(KEY,key);
 
                        data.child(key).setValue(maptoUpload);
                        mProgressDialog.setVisibility(View.GONE);
@@ -145,7 +154,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
                upload.addOnFailureListener(new OnFailureListener() {
                    @Override
                    public void onFailure(@NonNull Exception e) {
-                       Toast.makeText(getApplicationContext(),"error uploading",Toast.LENGTH_SHORT).show();
+                       Toast.makeText(getApplicationContext(),getApplicationContext().getResources().getString(R.string.error_upload_one),Toast.LENGTH_SHORT).show();
                         mProgressDialog.setVisibility(View.GONE);
 
                    }
@@ -167,7 +176,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
 
 
-       backBtn.setOnClickListener(new View.OnClickListener() {
+       mBackBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
                finish();
@@ -180,7 +189,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
     {
 
         try {
-            File f=new File(path, "profile.jpg");
+            File f=new File(path, PROFILE);
             ImageView img = findViewById(R.id.tempImage);
             Picasso.with(this)
                     .load(f)
@@ -192,7 +201,7 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             b.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byteArray = stream.toByteArray();
+            mByteArray = stream.toByteArray();
 
 
 
@@ -222,12 +231,12 @@ public class UploadActivity extends AppCompatActivity implements OnMapReadyCallb
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
-                            gps.setText("Long " + currentLocation.getLongitude() + " Lat " + currentLocation.getLatitude());
+                            mGps.setText(getApplicationContext().getResources().getString(R.string.upload_long_one) + currentLocation.getLongitude() + getApplicationContext().getResources().getString(R.string.upload_lat_one) + currentLocation.getLatitude());
                             mLong = currentLocation.getLongitude();
                             mLat = currentLocation.getLatitude();
                             Log.d(TAG,"Lat " + currentLocation.getLatitude()+ " Long " +currentLocation.getLongitude() );
                         } else {
-                            Toast.makeText(getApplicationContext(), "Unable to Find Current Location", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.map_toast_one), Toast.LENGTH_LONG).show();
 
                         }
                     }

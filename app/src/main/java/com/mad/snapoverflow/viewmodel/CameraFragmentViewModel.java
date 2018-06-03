@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.mad.snapoverflow.R;
 import com.mad.snapoverflow.view.Activities.UploadActivity;
 
 import java.io.File;
@@ -34,7 +35,11 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
 
 
     private android.hardware.Camera.PictureCallback mPictureCallback;
-    private static final String TAG = "IMAGE";
+    private static final String TAG = "Camera";
+    private static final String IMAGE = "image";
+    private static final String PROFILE = "profile.jpg";
+    private static final String DIR = "imageDir";
+
     private Context mContext;
     private android.hardware.Camera mCamera;
     private SurfaceHolder mSurfaceHolder;
@@ -54,23 +59,6 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         mPictureCallback = callback;
         mSurfaceHolder = SurfaceHolder;
         mActivity = activity;
-        
-        
-        mPictureCallback = new android.hardware.Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] bytes, Camera camera) {
-                Bitmap mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-               // Intent intent = new Intent(mContext, UploadActivity.class);
-                if (mBitmap != null){
-                    mPath = saveToInternalStorage(mBitmap);
-                    mIntent.putExtra("image",mPath);
-                    //intent.putExtra("image",s);
-                }
-
-               // mContext.startActivity(intent);
-
-            }
-        };
 
         if(ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.CAMERA},CAMERA_REQUEST_CODE);
@@ -80,6 +68,25 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
             mSurfaceHolder.addCallback(this);
             mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         }
+        
+        
+        mPictureCallback = new android.hardware.Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes, Camera camera) {
+                Bitmap mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                if (mBitmap != null){
+                    mPath = saveToInternalStorage(mBitmap);
+                    mIntent.putExtra(IMAGE,mPath);
+
+                }
+
+
+
+            }
+        };
+
+
 
     }
 
@@ -155,7 +162,7 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
                     mSurfaceHolder.addCallback(this);
                     mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
                 } else {
-                    Toast.makeText(mContext,"Please provide the permission",Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext,mContext.getResources().getString(R.string.cam_toast_one),Toast.LENGTH_LONG).show();
                 }
                 break;
             }
@@ -181,9 +188,9 @@ public class CameraFragmentViewModel extends AppCompatActivity implements Surfac
         Bitmap rotateBitmap = rotate(bitmapImage);
         ContextWrapper cw = new ContextWrapper(Objects.requireNonNull(mContext).getApplicationContext());
         // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        File directory = cw.getDir(DIR, Context.MODE_PRIVATE);
         // Create imageDir
-        File mypath = new File(directory,"profile.jpg");
+        File mypath = new File(directory,PROFILE);
 
         FileOutputStream fos = null;
         try {

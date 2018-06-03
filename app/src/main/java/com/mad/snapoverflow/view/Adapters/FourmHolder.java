@@ -15,10 +15,16 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class FourmHolder extends RecyclerView.ViewHolder{
-        TextView userText;
-        TextView mTitleText;
-        ImageView mImageView;
-        View mView;
+
+        private TextView mTitleText;
+        private ImageView mImageView;
+        private View mView;
+
+        private static final String CONTENT = "content";
+        private static final String IMAGEURL = "url";
+        private static final String TITLE = "title";
+        private static final String DATE = "date";
+        private static final String KEY = "key";
 
         public FourmHolder(View view) {
             super(view);
@@ -26,11 +32,6 @@ public class FourmHolder extends RecyclerView.ViewHolder{
 
 
         }
-
-       /* public void setUser(String username){
-            userText = mView.findViewById(R.id.textUser);
-            userText.setText(username);
-        }*/
 
         public void setTitles(String title){
         mTitleText = mView.findViewById(R.id.textTitle);
@@ -48,11 +49,11 @@ public class FourmHolder extends RecyclerView.ViewHolder{
                 @Override
                 public void onClick(View v) {
                     Intent mIntent = new Intent(context,FourmDiscussionActivity.class);
-                    mIntent.putExtra("content",ctx);
-                    mIntent.putExtra("url",imageUrl);
-                    mIntent.putExtra("title",title);
-                    mIntent.putExtra("date",date);
-                    mIntent.putExtra("key",key);
+                    mIntent.putExtra(CONTENT,ctx);
+                    mIntent.putExtra(IMAGEURL,imageUrl);
+                    mIntent.putExtra(TITLE,title);
+                    mIntent.putExtra(DATE,date);
+                    mIntent.putExtra(KEY,key);
                     context.startActivity(mIntent);
                 }
             });

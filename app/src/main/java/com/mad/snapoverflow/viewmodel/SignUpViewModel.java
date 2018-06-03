@@ -28,6 +28,7 @@ public class SignUpViewModel extends BaseObservable {
     private EditText mEmailET, mPassET;
     private ProgressBar mProgressSign;
     private FirebaseAuth mAuth;
+    private static final String USERS = "Users";
 
     public SignUpViewModel(Context context, String email, String password, String aoi, String date, String uni,
                            String username, ProgressBar progress, EditText emailET, EditText passET) {
@@ -109,25 +110,25 @@ public class SignUpViewModel extends BaseObservable {
         final String username = getUsername();
 
         if (email.isEmpty()) {
-            mEmailET.setError("Email is required");
+            mEmailET.setError(mContext.getResources().getString(R.string.email_error));
             mEmailET.requestFocus();
             return;
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mEmailET.setError("Please enter a valid email");
+            mEmailET.setError(mContext.getResources().getString(R.string.email_valid));
             mEmailET.requestFocus();
             return;
         }
 
         if (password.isEmpty()) {
-            mPassET.setError("Password is required");
+            mPassET.setError(mContext.getResources().getString(R.string.password_error));
             mPassET.requestFocus();
             return;
         }
 
         if (password.length() < 6) {
-            mPassET.setError("Minimum length of password should be 6 characters");
+            mPassET.setError(mContext.getResources().getString(R.string.min_string));
             mPassET.requestFocus();
             return;
         }
@@ -150,14 +151,14 @@ public class SignUpViewModel extends BaseObservable {
                             date
                     );
 
-                    FirebaseDatabase.getInstance().getReference("Users")
+                    FirebaseDatabase.getInstance().getReference(USERS)
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                             .setValue(users).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 launchRegisteredActivity();
-                                Toast.makeText(mContext, "User Registered Successful", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, mContext.getResources().getString(R.string.reg_toast_one), Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(mContext, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -168,7 +169,7 @@ public class SignUpViewModel extends BaseObservable {
                 } else {
 
                     if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                        Toast.makeText(mContext, "Email already Exists", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, mContext.getResources().getString(R.string.reg_toast_two), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(mContext, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }

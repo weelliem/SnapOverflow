@@ -22,12 +22,14 @@ import java.util.ArrayList;
 public class FourmActivityFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    DatabaseReference mQuestions;
+    private DatabaseReference mQuestions;
     private RecyclerView.Adapter mAdapter;
     public  ArrayList<FourmModel> sFourmObjects = new ArrayList<>();
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+
+    private static final String QUESTION = "Question";
 
     public static FourmActivityFragment newInstance() {
 
@@ -51,7 +53,7 @@ public class FourmActivityFragment extends Fragment {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-       mDatabaseReference = FirebaseDatabase.getInstance().getReference("Question");
+       mDatabaseReference = FirebaseDatabase.getInstance().getReference(QUESTION);
 
        mDatabaseReference.keepSynced(true);
 
@@ -65,10 +67,9 @@ public class FourmActivityFragment extends Fragment {
                 (FourmModel.class,R.layout.activity_fourm_item,FourmHolder.class,mDatabaseReference) {
             @Override
             protected void populateViewHolder(FourmHolder viewHolder, FourmModel model, int position) {
-//              viewHolder.setUser(model.getUsername());
                 viewHolder.setTitles(model.gettitle());
                 viewHolder.setImage(getContext(),model.getimageUrl());
-                viewHolder.setOnclick(model.getContent(),model.getimageUrl(),getContext(),model.gettitle(),model.getSystemtime(),model.getKey());
+                viewHolder.setOnclick(model.getContent(),model.getimageUrl(),getContext(),model.gettitle(),model.getSystemTime(),model.getKey());
 
             }
 

@@ -25,11 +25,10 @@ import com.mad.snapoverflow.viewmodel.SignUpViewModel;
 
 public class SignupActivity extends AppCompatActivity {
 
-    String editTextEmail, editTextPassword,editTextUni, editTextDate, editTextAoi, editTextUsername;
-    ProgressBar progressSign;
+    public String editTextEmail, editTextPassword,editTextUni, editTextDate, editTextAoi, editTextUsername;
+    public ProgressBar progressSign;
     private ActivitySignupBinding mBinding;
     private SignUpViewModel mViewModel;
-    private FirebaseAuth mAuth;
 
 
 

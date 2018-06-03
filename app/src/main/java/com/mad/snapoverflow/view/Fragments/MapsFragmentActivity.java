@@ -1,6 +1,7 @@
 package com.mad.snapoverflow.view.Fragments;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
@@ -12,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -47,12 +49,15 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final String TAG = "MapActivity";
+    private static final String QUESTION = "Question";
+    private static final String GPSLAT = "gpsLat";
+    private static final String GPSLONG = "gpsLong";
+    private static final String TITLE = "title";
     private static final float DEFAULT_ZOOM = 15;
+    final int CAMERA_REQUEST_CODE = 1;
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_REQUEST_CODE = 2991;
-    public double Long;
-    public double Lat;
     private boolean mLocationPermissionGranted = false;
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mReference;
@@ -74,6 +79,7 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.activity_maps_fragment,null,false);
         View view = mBinding.getRoot();
+
 
         getLocationPermission();
 
@@ -103,7 +109,7 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
                             mBinding.setMapFragmentViewModel(new MapFragmentViewModel(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
                         } else {
-                            Toast.makeText(getActivity(), "Unable to Find Current Location", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getContext().getResources().getString(R.string.map_toast_one), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -143,7 +149,9 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
 
         getDeviceLocation();
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -166,8 +174,10 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
     @Override
     public void onPause() {
         super.onPause();
+        if(mLocationPermissionGranted){
         mMap.clear();
         mClusterManager.clearItems();
+        }
         Log.d(TAG, "onPause: ");
     }
 
@@ -177,37 +187,40 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
     public void addMarker(){
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mReference = mDatabaseReference.child("Question");
+        mReference = mDatabaseReference.child(QUESTION);
 
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()){
-                    double latTxt = ds.child("gpsLat").getValue(double.class);
-                    double longTxt = ds.child("gpsLong").getValue(double.class);
-                    String titleTxt = ds.child("title").getValue(String.class);
+        if(mLocationPermissionGranted) {
 
-                    Log.d(TAG, "onDataChange: Lat" + latTxt + " Long " + longTxt);
+            ValueEventListener eventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        double latTxt = ds.child(GPSLAT).getValue(double.class);
+                        double longTxt = ds.child(GPSLONG).getValue(double.class);
+                        String titleTxt = ds.child(TITLE).getValue(String.class);
+
+                        Log.d(TAG, "onDataChange: Lat" + latTxt + " Long " + longTxt);
                    /* double Lat = Double.parseDouble(latTxt);
                     double Long = Double.parseDouble(longTxt);*/
-                    LatLng newGps = new LatLng(latTxt,longTxt);
-                    mClusterManager.addItem(new MarkerModel(latTxt,longTxt,titleTxt,""));
-                    mClusterManager.cluster();
+                        LatLng newGps = new LatLng(latTxt, longTxt);
+                        mClusterManager.addItem(new MarkerModel(latTxt, longTxt, titleTxt, ""));
+                        mClusterManager.cluster();
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        };
-        mReference.addListenerForSingleValueEvent(eventListener);
+                }
+            };
+            mReference.addListenerForSingleValueEvent(eventListener);
+        }
     }
 
     private void getLocationPermission(){
         Log.d(TAG,"getLocationPermission Called ");
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
+                Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.CAMERA};
 
         if(ContextCompat.checkSelfPermission(getContext(),FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             if(ContextCompat.checkSelfPermission(getContext(),COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -226,26 +239,38 @@ public class MapsFragmentActivity extends Fragment  implements OnMapReadyCallbac
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG,"onRequestPermissionResult Called ");
-        mLocationPermissionGranted = false;
+        Log.d(TAG, "onRequestPermissionResult Called ");
 
-        switch (requestCode){
-            case LOCATION_REQUEST_CODE:{
-                if(grantResults.length > 0){
-                    for(int i = 0; i < grantResults.length; i++) {
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+
+        switch (requestCode) {
+            case LOCATION_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                             mLocationPermissionGranted = false;
-                            Log.d(TAG,"PERMISSION FAILED Called ");
+                            Log.d(TAG, "PERMISSION FAILED CALLED ");
                             return;
                         }
                     }
                     mLocationPermissionGranted = true;
-                    Log.d(TAG,"PERMISSION GRANTED Called ");
+                    Log.d(TAG, "PERMISSION GRANTED Called ");
                     StartMap();
+
                 }
+
             }
+
+            case CAMERA_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+               /* mSurfaceHolder.addCallback(this);
+                mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);*/
+                } else {
+                    Toast.makeText(getContext(), getContext().getResources().getString(R.string.cam_toast_one), Toast.LENGTH_LONG).show();
+                }
+
+            }
+
         }
     }
-
 
 }

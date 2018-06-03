@@ -133,21 +133,21 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:layout_marginBottom="10dp"
-                android:hint="Title" />
+                android:hint="@string/title_hint" />
 
             <TextView
                 android:id="@+id/GPS"
                 android:layout_width="match_parent"
                 android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
-                android:text="GPS" />
+                android:text="@string/gps_fill" />
 
             <TextView
                 android:id="@+id/timeDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="Time/Date" />
+                android:text="@string/time_date" />
 
             <EditText
                 android:id="@+id/contentText"
@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:hint="Description" />
+                android:hint="@string/description_hint" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -168,7 +168,7 @@
                     android:id="@+id/uploadBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="upload"
+                    android:text="@string/button_upload"
                     style="@style/buttonStyle"
                     android:background="@drawable/button_main"
                     android:stateListAnimator="@null"
@@ -178,7 +178,7 @@
                     android:id="@+id/backBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="back"
+                    android:text="@string/button_back"
                     style="@style/buttonStyle"
                     android:background="@drawable/button_main"
                     android:stateListAnimator="@null"/>

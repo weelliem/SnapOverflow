@@ -8,8 +8,8 @@ import com.mad.snapoverflow.R;
 
 public class CommentsHolder extends RecyclerView.ViewHolder {
 
-    View mView;
-    TextView mTitleText;
+    private View mView;
+    private TextView mTitleText;
 
     public CommentsHolder(View view) {
         super(view);

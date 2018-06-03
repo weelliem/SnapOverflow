@@ -1,7 +1,12 @@
 package com.mad.snapoverflow.view.Activities;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +31,11 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel mViewModel;
     private String mEditTextEmail;
     private String mEditTextPassword;
+    private static final String EMAILHINT = "Email";
+    private static final String PASSWORDHINT = "Password";
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_REQUEST_CODE = 2991;
 
 
     @Override
@@ -34,8 +44,23 @@ public class LoginActivity extends AppCompatActivity {
         mBinding = DataBindingUtil.setContentView(this,R.layout.activity_login);
         mEditTextEmail = mBinding.textEmail.getText().toString();
         mEditTextPassword = mBinding.textPassword.getText().toString();
-        mViewModel = new LoginViewModel(new UsersLoginModel("Email","Password"), this, mEditTextPassword, mEditTextEmail,mBinding.textEmail, mBinding.textPassword);
+        mViewModel = new LoginViewModel(new UsersLoginModel(EMAILHINT,PASSWORDHINT), this, mEditTextPassword, mEditTextEmail,mBinding.textEmail, mBinding.textPassword);
         mBinding.setLoginViewModel(mViewModel);
+
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.CAMERA};
+
+        if(ContextCompat.checkSelfPermission(this,FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this,COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
+            }
+            else {
+                ActivityCompat.requestPermissions(this,permissions,LOCATION_REQUEST_CODE);
+            }
+        }
+        else {
+            ActivityCompat.requestPermissions(this,permissions,LOCATION_REQUEST_CODE);
+        }
 
     }
 

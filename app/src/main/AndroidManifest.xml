@@ -22,11 +22,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:screenOrientation="sensorPortrait">
 
         <activity android:name=".view.Activities.LoginActivity"
             android:label="SnapOverflow"
-            android:theme="@style/AppThemeNoAction">
+            android:theme="@style/AppThemeNoAction"
+            android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -37,7 +39,8 @@
 
         <activity android:name=".view.Activities.SignupActivity"
             android:label="SnapOverflow"
-            android:theme="@style/AppThemeNoAction"/>
+            android:theme="@style/AppThemeNoAction"
+            android:screenOrientation="sensorPortrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -53,16 +56,19 @@
         <activity
             android:name=".view.Activities.MainFragmentActivity"
             android:label="SnapOverflow"
-            android:theme="@style/AppThemeNoAction" />
+            android:theme="@style/AppThemeNoAction"
+            android:screenOrientation="sensorPortrait"/>
 
         <activity android:name=".view.Activities.UploadActivity"
             android:label="SnapOverflow"
             android:theme="@style/AppThemeNoAction"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="sensorPortrait"
             />
 
         <activity android:name=".view.Activities.FourmDiscussionActivity"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="sensorPortrait"/>
     </application>
 
 </manifest>
